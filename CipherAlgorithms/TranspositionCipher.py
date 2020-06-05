@@ -1,4 +1,7 @@
 import math
+import os
+import sys
+import time
 
 
 def transposition_cipher(message, **kwargs):
@@ -57,3 +60,23 @@ def decryptTC(message, possible_key):
             c = 0
             r += 1
     return ''.join(plaintext)
+
+
+def transposition_cipher_file(inputFile, outputFile, **kwargs):
+    if not os.path.exists(inputFile):
+        print('Input File not exists')
+        sys.exit()
+    if os.path.exists(outputFile):
+        choice = input('Output File exists, Overwrite it?(Y/N)')
+        if not choice.lower().startswith('y'):
+            sys.exit()
+    fileObj = open(inputFile)
+    content = fileObj.read()
+    fileObj.close()
+    starttime = time.time()
+    text, text_length = transposition_cipher(content, key=kwargs.get('key', 0), mode=kwargs.get('mode', 'encrypt'))
+    totaltime = round(time.time() - starttime, 2)
+    fileObj2 = open(outputFile, 'w')
+    fileObj2.write(text)
+    fileObj2.close()
+    print(f'{kwargs.get("mode")} Succeed, Time Consumption:{totaltime}')
