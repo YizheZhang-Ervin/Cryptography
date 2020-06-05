@@ -12,9 +12,9 @@ def caesar_cipher(message='', **kwargs):
                   + ''.join([chr(a) for a in range(97, 123)]) \
                   + ''.join([chr(i) for i in range(48, 58)])
     if kwargs:
-        allowedchar += kwargs['extrachar']
-        key = kwargs['key']
-        mode = kwargs['mode']
+        allowedchar += kwargs.get('extrachar', '')
+        key = kwargs.get('key')
+        mode = kwargs.get('mode')
     else:
         key, mode = 0, 'encrypt'
 

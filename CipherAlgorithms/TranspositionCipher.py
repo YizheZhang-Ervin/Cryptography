@@ -1,3 +1,6 @@
+import math
+
+
 def transposition_cipher(message, **kwargs):
     """
     :param message: plaintext
@@ -6,11 +9,11 @@ def transposition_cipher(message, **kwargs):
     """
 
     if kwargs:
-        key = kwargs['key']
-        mode = kwargs['mode']
+        key = kwargs.get('key')
+        mode = kwargs.get('mode')
     else:
         key, mode = 0, 'encrypt'
-
+    # 加密
     if mode == 'encrypt':
         result_mes = [''] * key
         for column in range(key):
@@ -22,5 +25,35 @@ def transposition_cipher(message, **kwargs):
                 index_mes += key
         rst = ''.join(result_mes)
         return rst, len(rst)
+    # 解密
     elif mode == 'decrypt':
-        return
+        if key != 0 and key is not None and key != '':
+            return decryptTC(message, int(key)), len(decryptTC(message, key))
+        rst = []
+        for possible_key in range(2, len(message)):
+            rst.append(decryptTC(message, possible_key))
+        return rst, len(rst)
+
+
+def decryptTC(message, possible_key):
+    # abcdefghi -- adgbehcfi
+    # abc --  adg
+    # def --  beh
+    # ghi --  cfi
+    # 列数=明文长度/密钥长度
+    cols = int(math.ceil(len(message) / float(possible_key)))
+    # 行数=密钥长度
+    rows = possible_key
+    # 多余空格数 = 行列之和-明文长度
+    cutboxs = (cols * rows) - len(message)
+    plaintext = [''] * cols
+    r, c = 0, 0
+    # 按列取
+    for m in message:
+        plaintext[c] += m
+        c += 1
+        # 除首行外第一行开头 or 行末尾且当前行>满格的行数(即是否在多余的空格里)
+        if c == cols or (c == cols - 1 and r >= rows - cutboxs):
+            c = 0
+            r += 1
+    return ''.join(plaintext)

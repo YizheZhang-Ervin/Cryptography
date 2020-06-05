@@ -7,7 +7,7 @@ def reverse_cipher(message='', **kwargs):
     """
 
     if kwargs:
-        mode = kwargs['mode']
+        mode = kwargs.get('mode')
     else:
         mode = 'encrypt'
     if mode == 'encrypt':
