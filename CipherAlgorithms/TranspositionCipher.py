@@ -2,40 +2,7 @@ import math
 import os
 import sys
 import time
-
-
-def transposition_cipher(message, **kwargs):
-    """
-    :param message: plaintext
-    :param kwargs: key=0 / mode=encrypt
-    :return: ciphertext,len(ciphertext)
-    """
-
-    if kwargs:
-        key = kwargs.get('key')
-        mode = kwargs.get('mode')
-    else:
-        key, mode = 0, 'encrypt'
-    # 加密
-    if mode == 'encrypt':
-        result_mes = [''] * key
-        for column in range(key):
-            index_mes = column
-            while index_mes < len(message):
-                # 原内容按列存入result_mes
-                result_mes[column] += message[index_mes]
-                # 原内容每行key个
-                index_mes += key
-        rst = ''.join(result_mes)
-        return rst, len(rst)
-    # 解密
-    elif mode == 'decrypt':
-        if key != 0 and key is not None and key != '':
-            return decryptTC(message, int(key)), len(decryptTC(message, key))
-        rst = []
-        for possible_key in range(2, len(message)):
-            rst.append(decryptTC(message, possible_key))
-        return rst, len(rst)
+from CiperOperations.check_ifenglish import check_ifenglish
 
 
 def decryptTC(message, possible_key):
@@ -62,7 +29,37 @@ def decryptTC(message, possible_key):
     return ''.join(plaintext)
 
 
-def transposition_cipher_file(inputFile, outputFile, **kwargs):
+def string_process(processType, message, key):
+    # 加密
+    if processType.upper().startswith('E'):
+        result_mes = [''] * key
+        for column in range(key):
+            index_mes = column
+            while index_mes < len(message):
+                # 原内容按列存入result_mes
+                result_mes[column] += message[index_mes]
+                # 原内容每行key个
+                index_mes += key
+        rst = ''.join(result_mes)
+        return rst, len(rst)
+    # 解密(已知key进行decrypt)
+    elif processType.upper().startswith('D'):
+        if key != 0 and key is not None and key != '':
+            return decryptTC(message, int(key)), len(decryptTC(message, key))
+    # 暴力穷举破解(乱猜key进行hacker)
+    elif processType.upper().startswith('H'):
+        rst = []
+        for possible_key in range(1, len(message)):
+            de_text = decryptTC(message, possible_key)
+            rst.append(de_text)
+            if check_ifenglish(de_text):
+                choice = input('Find possible result, Stop decrypt?(Y/N)')
+                if choice.lower().startswith('y'):
+                    return de_text, 1
+        return rst, len(rst)
+
+
+def file_process(processType, inputFile, outputFile, key):
     if not os.path.exists(inputFile):
         print('Input File not exists')
         sys.exit()
@@ -74,9 +71,46 @@ def transposition_cipher_file(inputFile, outputFile, **kwargs):
     content = fileObj.read()
     fileObj.close()
     starttime = time.time()
-    text, text_length = transposition_cipher(content, key=kwargs.get('key', 0), mode=kwargs.get('mode', 'encrypt'))
-    totaltime = round(time.time() - starttime, 2)
+    text, text_length = string_process(processType, content, key)
+    totaltime = round(time.time() - starttime, 3)
     fileObj2 = open(outputFile, 'w')
     fileObj2.write(text)
     fileObj2.close()
-    print(f'{kwargs.get("mode")} Succeed, Time Consumption:{totaltime}')
+    return totaltime
+
+
+def transpositionCipher(objType, processType, **kwargs):
+    """
+        :param objType: String/File
+        :param processType: Encrypt/Decrypt/Hacker
+        :return: text,length
+    """
+
+    if kwargs:
+        flag = kwargs.get('flag')
+    else:
+        flag = 'normal'
+    # inputs
+    key = 0
+    if not flag.upper().startswith('T'):
+        if not processType.upper().startswith('H'):
+            key = int(input('Enter key (positive integer):'))
+    # String
+    if objType.upper().startswith('S'):
+        if flag.upper().startswith('T'):
+            message = kwargs.get('message')
+            key = int(kwargs.get('key'))
+        else:
+            message = input('Enter Message:')
+        return string_process(processType, message, key)
+
+    # File
+    elif objType.upper().startswith('F'):
+        inputFile = input('Enter InputFile:')
+        outputFile = input('Enter OutputFile:')
+        if processType.upper().startswith('E'):
+            return 'Encrypt Succeed', file_process('E', inputFile, outputFile, key)
+        elif processType.upper().startswith('D'):
+            return 'Decrypt Succeed', file_process('D', inputFile, outputFile, key)
+        elif processType.upper().startswith('H'):
+            return 'Hacker Succeed', file_process('H', inputFile, outputFile, key)
