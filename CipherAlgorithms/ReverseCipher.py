@@ -34,9 +34,10 @@ def string_process(processType, message):
 
 def reverseCipher(objType, processType, **kwargs):
     """
-    :param objType: String/File
-    :param processType: Encrypt/Decrypt/Hacker
-    :return: text,length
+        :param objType: String/File
+        :param processType: Encrypt/Decrypt/Hacker
+        :param kwargs: flag/message
+        :return: text,length
     """
 
     if kwargs:
@@ -61,3 +62,7 @@ def reverseCipher(objType, processType, **kwargs):
             return 'Decrypt Succeed', file_process('D', inputFile, outputFile)
         elif processType.upper().startswith('H'):
             return 'Hacker Succeed', file_process('H', inputFile, outputFile)
+        else:
+            sys.exit('Enter Encrypt / Decrypt / Hacker')
+    else:
+        sys.exit('Enter String / File')

@@ -1,62 +1,43 @@
-import math
 import os
+import random
 import sys
 import time
-from CiperOperations.check_ifenglish import check_ifenglish
+
+letterList = [chr(a) for a in range(65, 91)]
+letterStr = ''.join(letterList)
 
 
-def decryptTC(message, possible_key):
-    # abcdefghi -- adgbehcfi
-    # abc --  adg
-    # def --  beh
-    # ghi --  cfi
-    # 列数=明文长度/密钥长度
-    cols = int(math.ceil(len(message) / float(possible_key)))
-    # 行数=密钥长度
-    rows = possible_key
-    # 多余空格数 = 行列之和-明文长度
-    cutboxs = (cols * rows) - len(message)
-    plaintext = [''] * cols
-    r, c = 0, 0
-    # 按列取
-    for m in message:
-        plaintext[c] += m
-        c += 1
-        # 除首行外第一行开头 or 行末尾且当前行>满格的行数(即是否在多余的空格里)
-        if c == cols or (c == cols - 1 and r >= rows - cutboxs):
-            c = 0
-            r += 1
-    return ''.join(plaintext)
+def checkKeyValid(key):
+    keyList = list(key)
+    return sorted(keyList) == sorted(letterList)
+
+
+def getRandomKey():
+    random.shuffle(letterList)
+    return ''.join(letterList)
 
 
 def string_process(processType, message, key):
-    # 加密
-    if processType.upper().startswith('E'):
-        result_mes = [''] * key
-        for column in range(key):
-            index_mes = column
-            while index_mes < len(message):
-                # 原内容按列存入result_mes
-                result_mes[column] += message[index_mes]
-                # 原内容每行key个
-                index_mes += key
-        rst = ''.join(result_mes)
-        return rst, len(rst)
-    # 解密(已知key进行decrypt)
-    elif processType.upper().startswith('D'):
-        if key != 0 and key is not None and key != '':
-            return decryptTC(message, int(key)), len(decryptTC(message, key))
-    # 暴力穷举破解(乱猜key进行hacker)
+    text = ''
+    charA = letterStr
+    charB = key
+    # encrypt / decrypt
+    if processType.upper().startswith('D'):
+        charA, charB = charB, charA
+    if processType.upper().startswith('E') or processType.upper().startswith('D'):
+        for m in message:
+            if m.upper() in charA:
+                index = charA.find(m.upper())
+                if m.isupper():
+                    text += charB[index].upper()
+                else:
+                    text += charB[index].lower()
+            else:
+                text += m
+        return text, len(text)
+    # hacker
     elif processType.upper().startswith('H'):
-        rst = []
-        for possible_key in range(1, len(message)):
-            de_text = decryptTC(message, possible_key)
-            rst.append(de_text)
-            if check_ifenglish(de_text):
-                choice = input('Find possible result, Stop decrypt?(Y/N)')
-                if choice.lower().startswith('y'):
-                    return de_text, 1
-        return rst, len(rst)
+        pass
 
 
 def file_process(processType, inputFile, outputFile, key):
@@ -79,7 +60,7 @@ def file_process(processType, inputFile, outputFile, key):
     return totaltime
 
 
-def transpositionCipher(objType, processType, **kwargs):
+def substitutionCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
@@ -95,12 +76,15 @@ def transpositionCipher(objType, processType, **kwargs):
     key = 0
     if not flag.upper().startswith('T'):
         if not processType.upper().startswith('H'):
-            key = int(input('Enter key (positive integer):'))
+            key = input('Enter key (positive integer):')
+            if key.upper().startswith('R'):
+                key = getRandomKey()
+                print(f'Generated random key:{key}')
     # String
     if objType.upper().startswith('S'):
         if flag.upper().startswith('T'):
             message = kwargs.get('message')
-            key = int(kwargs.get('key'))
+            key = kwargs.get('key')
         else:
             message = input('Enter Message:')
         return string_process(processType, message, key)

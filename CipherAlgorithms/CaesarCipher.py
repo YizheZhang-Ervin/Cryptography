@@ -66,6 +66,7 @@ def caesarCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
+        :param kwargs: flag/message/key
         :return: text,length
     """
 
@@ -103,3 +104,7 @@ def caesarCipher(objType, processType, **kwargs):
             return 'Decrypt Succeed', file_process('D', inputFile, outputFile, allowedchar, key)
         elif processType.upper().startswith('H'):
             return 'Hacker Succeed', file_process('H', inputFile, outputFile, allowedchar, key)
+        else:
+            sys.exit('Enter Encrypt / Decrypt / Hacker')
+    else:
+        sys.exit('Enter String / File')

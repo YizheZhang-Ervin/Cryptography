@@ -5,6 +5,7 @@ from CiperOperations.auto_test import autoTest
 from CipherAlgorithms.AffineCipher import affineCipher
 from CipherAlgorithms.CaesarCipher import caesarCipher
 from CipherAlgorithms.ReverseCipher import reverseCipher
+from CipherAlgorithms.SubstitutionCipher import substitutionCipher
 from CipherAlgorithms.TranspositionCipher import transpositionCipher
 
 
@@ -17,6 +18,10 @@ def function_choice(function, objType, processType):
         return transpositionCipher(objType, processType)
     elif function == 'AffineCipher' or bool(re.match(r'[A][C]', function, re.IGNORECASE)):
         return affineCipher(objType, processType)
+    elif function == 'SubstitutionCipher' or bool(re.match(r'[S][C]', function, re.IGNORECASE)):
+        return substitutionCipher(objType, processType)
+    else:
+        sys.exit('no this function')
 
 
 def usagemode():
@@ -47,8 +52,7 @@ def usagemode():
             autoTest()
         return 'All Auto Tests Succeed', times, 'AutoTest'
     else:
-        print('Please enter (Manual/Auto)')
-        return 'Auto Tests Failed', -1, 'AutoTest'
+        sys.exit('Please enter (Manual/Auto)')
 
 
 def main():

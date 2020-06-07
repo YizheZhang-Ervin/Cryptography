@@ -15,7 +15,7 @@ def remove_nonletters(message):
     # remove non letters
     filtermessage = []
     for i in message:
-        if i in upperletters + lowerletters + ' \t\n':
+        if str(i) in upperletters + lowerletters + ' \t\n':
             filtermessage.append(i)
     filtermessage = ''.join(filtermessage)
     return filtermessage

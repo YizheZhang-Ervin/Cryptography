@@ -3,6 +3,8 @@ import random
 import sys
 import time
 
+from CiperOperations.check_ifenglish import check_ifenglish
+
 
 def gcd(a, b):
     while a != 0:
@@ -74,7 +76,18 @@ def string_process(processType, message, allowedchar, keyA, keyB):
                 plaintext += m
         return plaintext, len(plaintext)
     elif processType.upper().startswith('H'):
-        pass
+        rst_set = []
+        for k in range(len(allowedchar) ** 2):
+            keyA, keyB = split2Keys(k, allowedchar)
+            if gcd(keyA, len(allowedchar)) != 1:
+                continue
+            text = string_process('D', message, allowedchar, keyA, keyB)
+            rst_set.append(text)
+            if check_ifenglish(text):
+                choice = input('Find possible result, Stop decrypt?(Y/N)')
+                if choice.lower().startswith('y'):
+                    return text, 1
+        return rst_set, len(rst_set)
 
 
 def file_process(processType, inputFile, outputFile, allowedchar, keyA, keyB):
@@ -101,6 +114,7 @@ def affineCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
+        :param kwargs: flag/message/key
         :return: text,length
     """
 
@@ -122,6 +136,7 @@ def affineCipher(objType, processType, **kwargs):
             else:
                 key = int(key)
             keyA, keyB = split2Keys(key, allowedchar)
+            # check if enter invalid key
             while not checkKeys(keyA, keyB, 'encrypt', allowedchar):
                 key = getRandomKey(allowedchar)
                 keyA, keyB = split2Keys(key, allowedchar)
@@ -158,3 +173,7 @@ def affineCipher(objType, processType, **kwargs):
             return 'Decrypt Succeed', file_process('D', inputFile, outputFile, allowedchar, keyA, keyB)
         elif processType.upper().startswith('H'):
             return 'Hacker Succeed', file_process('H', inputFile, outputFile, allowedchar, keyA, keyB)
+        else:
+            sys.exit('Enter Encrypt / Decrypt / Hacker')
+    else:
+        sys.exit('Enter String / File')
