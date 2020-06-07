@@ -83,32 +83,33 @@ def transpositionCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
-        :param kwargs: flag/message/key
+        :param kwargs: message/key
         :return: text,length
     """
 
+    # Default values
+    message, inputFile, outputFile, key = '', '', '', 0
+
+    # Enter values
     if kwargs:
-        flag = kwargs.get('flag')
+        message = kwargs.get('message')
+        key = int(kwargs.get('key'))
     else:
-        flag = 'normal'
-    # inputs
-    key = 0
-    if not flag.upper().startswith('T'):
+        if objType.upper().startswith('S'):
+            message = input('Enter Message:')
+        if objType.upper().startswith('F'):
+            inputFile = input('Enter InputFile:')
+            outputFile = input('Enter OutputFile:')
+        # encrypt & decrypt
         if not processType.upper().startswith('H'):
             key = int(input('Enter key (positive integer):'))
+
     # String
     if objType.upper().startswith('S'):
-        if flag.upper().startswith('T'):
-            message = kwargs.get('message')
-            key = int(kwargs.get('key'))
-        else:
-            message = input('Enter Message:')
         return string_process(processType, message, key)
 
     # File
     elif objType.upper().startswith('F'):
-        inputFile = input('Enter InputFile:')
-        outputFile = input('Enter OutputFile:')
         if processType.upper().startswith('E'):
             return 'Encrypt Succeed', file_process('E', inputFile, outputFile, key)
         elif processType.upper().startswith('D'):

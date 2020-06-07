@@ -36,26 +36,28 @@ def reverseCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
-        :param kwargs: flag/message
+        :param kwargs: message
         :return: text,length
     """
 
+    # Default values
+    message, inputFile, outputFile = '', '', ''
+
+    # Enter values
     if kwargs:
-        flag = kwargs.get('flag')
+        message = kwargs.get('message')
     else:
-        flag = 'normal'
+        if objType.upper().startswith('S'):
+            message = input('Enter Message:')
+        if objType.upper().startswith('F'):
+            inputFile = input('Enter InputFile:')
+            outputFile = input('Enter OutputFile:')
     # String
     if objType.upper().startswith('S'):
-        if flag.upper().startswith('T'):
-            message = kwargs.get('message')
-        else:
-            message = input('Enter Message:')
         return string_process(processType, message)
 
     # File
     elif objType.upper().startswith('F'):
-        inputFile = input('Enter InputFile:')
-        outputFile = input('Enter OutputFile:')
         if processType.upper().startswith('E'):
             return 'Encrypt Succeed', file_process('E', inputFile, outputFile)
         elif processType.upper().startswith('D'):

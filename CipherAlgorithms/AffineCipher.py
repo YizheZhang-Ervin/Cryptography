@@ -114,59 +114,54 @@ def affineCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
-        :param kwargs: flag/message/key
+        :param kwargs: message/key
         :return: text,length
     """
 
-    if kwargs:
-        flag = kwargs.get('flag')
-    else:
-        flag = 'normal'
-    # initial
+    # Default values
+    message, inputFile, outputFile, key, keyA, keyB = '', '', '', 0, 0, 0
     allowedchar = ''.join([chr(a) for a in range(65, 91)]) \
                   + ''.join([chr(a) for a in range(97, 123)]) \
                   + ''.join([chr(i) for i in range(48, 58)])
-    # inputs
-    key, keyA, keyB = 0, 0, 0
-    if not flag.upper().startswith('T'):
+
+    # Enter values
+    if kwargs:
+        message = kwargs.get('message')
+        key = kwargs.get('key')
+        if processType.upper().startswith('E'):
+            key = int(key) if key != 'R' else getRandomKey(allowedchar)
+            print(f'Now key:{key}')
+    else:
+        if objType.upper().startswith('S'):
+            message = input('Enter Message:')
+        if objType.upper().startswith('F'):
+            inputFile = input('Enter InputFile:')
+            outputFile = input('Enter OutputFile:')
+        # encrypt & decrypt
         if not processType.upper().startswith('H'):
             key = input('Enter key (positive integer):')
-            if key.upper().startswith('R'):
-                key = getRandomKey(allowedchar)
-            else:
-                key = int(key)
-            keyA, keyB = split2Keys(key, allowedchar)
-            # check if enter invalid key
-            while not checkKeys(keyA, keyB, 'encrypt', allowedchar):
-                key = getRandomKey(allowedchar)
-                keyA, keyB = split2Keys(key, allowedchar)
-            print(f'Auto generate Random key:{key}')
+            # encrypt
+            if processType.upper().startswith('E'):
+                if key.upper().startswith('R'):
+                    key = getRandomKey(allowedchar)
+                    print(f'Auto generate Random key:{key}')
+                else:
+                    key = int(key)
         extrachar = input('Enter extra characters:')
         allowedchar += extrachar
+    # check if enter invalid key
+    keyA, keyB = split2Keys(key, allowedchar)
+    while not checkKeys(keyA, keyB, 'encrypt', allowedchar):
+        key = getRandomKey(allowedchar)
+        keyA, keyB = split2Keys(key, allowedchar)
+    print(f'Auto generate Random key:{key}')
+
     # String
     if objType.upper().startswith('S'):
-        if flag.upper().startswith('T'):
-            message = kwargs.get('message')
-            if processType.upper().startswith('E'):
-                while True:
-                    key = getRandomKey(allowedchar)
-                    keyA, keyB = split2Keys(key, allowedchar)
-                    if checkKeys(keyA, keyB, 'encrypt', allowedchar):
-                        break
-                text, length = string_process(processType, message, allowedchar, keyA, keyB)
-                return text, length, key
-            elif processType.upper().startswith('D'):
-                key = kwargs.get('key')
-                keyA, keyB = split2Keys(key, allowedchar)
-                return string_process(processType, message, allowedchar, keyA, keyB)
-        else:
-            message = input('Enter Message:')
         return string_process(processType, message, allowedchar, keyA, keyB)
 
     # File
     elif objType.upper().startswith('F'):
-        inputFile = input('Enter InputFile:')
-        outputFile = input('Enter OutputFile:')
         if processType.upper().startswith('E'):
             return 'Encrypt Succeed', file_process('E', inputFile, outputFile, allowedchar, keyA, keyB)
         elif processType.upper().startswith('D'):

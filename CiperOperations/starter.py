@@ -7,6 +7,7 @@ from CipherAlgorithms.CaesarCipher import caesarCipher
 from CipherAlgorithms.ReverseCipher import reverseCipher
 from CipherAlgorithms.SubstitutionCipher import substitutionCipher
 from CipherAlgorithms.TranspositionCipher import transpositionCipher
+from CipherAlgorithms.VigenereCipher import vigenereCipher
 
 
 def function_choice(function, objType, processType):
@@ -20,6 +21,8 @@ def function_choice(function, objType, processType):
         return affineCipher(objType, processType)
     elif function == 'SubstitutionCipher' or bool(re.match(r'[S][C]', function, re.IGNORECASE)):
         return substitutionCipher(objType, processType)
+    elif function == 'VigenereCipher' or bool(re.match(r'[V][C]', function, re.IGNORECASE)):
+        return vigenereCipher(objType, processType)
     else:
         sys.exit('no this function')
 

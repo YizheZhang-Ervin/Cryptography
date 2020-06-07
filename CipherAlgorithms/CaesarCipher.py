@@ -66,38 +66,38 @@ def caesarCipher(objType, processType, **kwargs):
     """
         :param objType: String/File
         :param processType: Encrypt/Decrypt/Hacker
-        :param kwargs: flag/message/key
+        :param kwargs: message/key
         :return: text,length
     """
 
-    if kwargs:
-        flag = kwargs.get('flag')
-    else:
-        flag = 'normal'
-    # initial
+    # Default values
+    message, inputFile, outputFile, key = '', '', '', 0
     allowedchar = ''.join([chr(a) for a in range(65, 91)]) \
                   + ''.join([chr(a) for a in range(97, 123)]) \
                   + ''.join([chr(i) for i in range(48, 58)])
-    # inputs
-    key = 0
-    if not flag.upper().startswith('T'):
+
+    # Enter values
+    if kwargs:
+        message = kwargs.get('message')
+        key = int(kwargs.get('key'))
+    else:
+        if objType.upper().startswith('S'):
+            message = input('Enter Message:')
+        if objType.upper().startswith('F'):
+            inputFile = input('Enter InputFile:')
+            outputFile = input('Enter OutputFile:')
+        # encrypt & decrypt
         if not processType.upper().startswith('H'):
             key = int(input('Enter key (positive integer):'))
         extrachar = input('Enter extra characters:')
         allowedchar += extrachar
+
     # String
     if objType.upper().startswith('S'):
-        if flag.upper().startswith('T'):
-            message = kwargs.get('message')
-            key = int(kwargs.get('key'))
-        else:
-            message = input('Enter Message:')
         return string_process(processType, message, allowedchar, key)
 
     # File
     elif objType.upper().startswith('F'):
-        inputFile = input('Enter InputFile:')
-        outputFile = input('Enter OutputFile:')
         if processType.upper().startswith('E'):
             return 'Encrypt Succeed', file_process('E', inputFile, outputFile, allowedchar, key)
         elif processType.upper().startswith('D'):
