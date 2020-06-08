@@ -4,6 +4,7 @@ import sys
 from CiperOperations.auto_test import autoTest
 from CipherAlgorithms.AffineCipher import affineCipher
 from CipherAlgorithms.CaesarCipher import caesarCipher
+from CipherAlgorithms.RSACiper import rsaCipher
 from CipherAlgorithms.ReverseCipher import reverseCipher
 from CipherAlgorithms.SubstitutionCipher import substitutionCipher
 from CipherAlgorithms.TranspositionCipher import transpositionCipher
@@ -23,6 +24,8 @@ def function_choice(function, objType, processType):
         return substitutionCipher(objType, processType)
     elif function == 'VigenereCipher' or bool(re.match(r'[V][C]', function, re.IGNORECASE)):
         return vigenereCipher(objType, processType)
+    elif function == 'RSACipher' or bool(re.match(r'[R][S][A]', function, re.IGNORECASE)):
+        return rsaCipher(objType, processType)
     else:
         sys.exit('no this function')
 
